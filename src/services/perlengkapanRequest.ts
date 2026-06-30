@@ -6,7 +6,7 @@ const INPUT_WEBHOOK_URL = WEBHOOK_INPUT_PENGAJUAN_PERLENGKAPAN
 export type PerlengkapanRequestPayload = {
   version: string
   'Tanggal Permintaan': string
-  Outlet: string
+  Cabang: string
   Status: string
   Items: Array<{
     'Kode Item': string
@@ -23,13 +23,13 @@ export type PerlengkapanRequestPayload = {
 
 export function buildPerlengkapanRequestBody(
   date: string,
-  outlet: string,
+  cabang: string,
   items: LineItem[],
 ): PerlengkapanRequestPayload {
   return {
     version: 'v1',
     'Tanggal Permintaan': date,
-    Outlet: outlet,
+    Cabang: cabang,
     Status: 'Submitted',
     Items: items.map(it => {
       const harga = it.price || 0

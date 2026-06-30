@@ -1,23 +1,23 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { LineItem, ItemRow } from '../types'
-import { OUTLETS } from '../constants'
+import { GUDANG } from '../constants'
 
 type GroupedItems = Record<string, LineItem[]>
 
 export type InventoryRequestSubmitPayload = {
   date: string
-  outlet: string
+  cabang: string
   note: string
   items: LineItem[]
 }
 
 export function useInventoryRequest() {
   const navigate = useNavigate()
-  const outlets = OUTLETS
+  const cabangs = GUDANG
 
   const [date, setDate] = useState<string>(new Date().toISOString().slice(0, 10))
-  const [outlet, setOutlet] = useState<string>('')
+  const [cabang, setCabang] = useState<string>('')
   const [note, setNote] = useState<string>('')
   const [itemId, setItemId] = useState<string>('')
   const [itemName, setItemName] = useState<string>('')
@@ -90,7 +90,7 @@ export function useInventoryRequest() {
   }, [itemsList])
 
   const handleSubmit = () => {
-    if (!date || !outlet) return
+    if (!date || !cabang) return
     if (itemsList.length === 0) {
       alert('Tambahkan minimal satu barang ke daftar sebelum mengirim.')
       return
@@ -98,7 +98,7 @@ export function useInventoryRequest() {
     setSubmitting(true)
     const payload: InventoryRequestSubmitPayload = {
       date,
-      outlet,
+      cabang,
       note: note.trim(),
       items: itemsList,
     }
@@ -110,8 +110,8 @@ export function useInventoryRequest() {
     setDate(e.target.value)
   }
 
-  const handleOutletChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setOutlet(e.target.value)
+  const handleCabangChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCabang(e.target.value)
   }
 
   const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -135,12 +135,12 @@ export function useInventoryRequest() {
   }
 
   const isAddDisabled = !itemName || !unit || quantity <= 0
-  const isSubmitDisabled = submitting || !date || !outlet || itemsList.length === 0
+  const isSubmitDisabled = submitting || !date || !cabang || itemsList.length === 0
 
   return {
-    outlets,
+    cabangs,
     date,
-    outlet,
+    cabang,
     note,
     itemName,
     unit,
@@ -150,7 +150,7 @@ export function useInventoryRequest() {
     itemsList,
     groupedItems,
     handleDateChange,
-    handleOutletChange,
+    handleCabangChange,
     handleNoteChange,
     handleQuantityChange,
     handleItemQuantityChange,

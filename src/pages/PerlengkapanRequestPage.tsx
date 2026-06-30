@@ -7,9 +7,9 @@ import { formatIDR } from '../utils/format'
 
 export default function PerlengkapanRequestPage() {
   const {
-    outlets,
+    cabangs,
     date,
-    outlet,
+    cabang,
     itemName,
     unit,
     quantity,
@@ -20,7 +20,7 @@ export default function PerlengkapanRequestPage() {
     submitting,
     itemsList,
     handleDateChange,
-    handleOutletChange,
+    handleCabangChange,
     handleQuantityChange,
     handlePriceChange,
     handleCoaChange,
@@ -50,10 +50,10 @@ export default function PerlengkapanRequestPage() {
             <input type="date" className="input" value={date} onChange={handleDateChange} />
           </div>
           <div className="control">
-            <label className="label">Outlet</label>
-            <select className="select" value={outlet} onChange={handleOutletChange}>
-              <option value="">Pilih Outlet</option>
-              {outlets.map(o => (<option key={o} value={o}>{o}</option>))}
+            <label className="label">Cabang</label>
+            <select className="select" value={cabang} onChange={handleCabangChange}>
+              <option value="">Pilih Cabang</option>
+              {cabangs.map(o => (<option key={o} value={o}>{o}</option>))}
             </select>
           </div>
 
@@ -73,7 +73,7 @@ export default function PerlengkapanRequestPage() {
           </div>
           <div className="control">
             <label className="label">Deskripsi COA</label>
-            <input className="input" placeholder="Contoh: Beban Perlengkapan Outlet" value={coaDescription} onChange={handleCoaDescriptionChange} />
+            <input className="input" placeholder="Contoh: Beban Perlengkapan Cabang" value={coaDescription} onChange={handleCoaDescriptionChange} />
           </div>
           <div className="control">
             <label className="label">Kategori Item</label>

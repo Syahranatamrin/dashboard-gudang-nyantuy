@@ -1,16 +1,16 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { LineItem, ItemRow } from '../types'
-import { OUTLETS } from '../constants'
+import { GUDANG } from '../constants'
 
 type GroupedItems = Record<string, LineItem[]>
 
 export function usePurchaseRequest() {
   const navigate = useNavigate()
-  const outlets = OUTLETS
+  const cabangs = GUDANG
 
   const [date, setDate] = useState<string>(new Date().toISOString().slice(0, 10))
-  const [outlet, setOutlet] = useState<string>('')
+  const [cabang, setCabang] = useState<string>('')
   const [itemId, setItemId] = useState<string>('')
   const [itemName, setItemName] = useState<string>('')
   const [unit, setUnit] = useState<string>('')
@@ -89,13 +89,13 @@ export function usePurchaseRequest() {
   }, [itemsList])
 
   const handleSubmit = async () => {
-    if (!date || !outlet) return
+    if (!date || !cabang) return
     if (itemsList.length === 0) {
       alert('Tambahkan minimal satu barang ke daftar sebelum mengirim.')
       return
     }
     setSubmitting(true)
-    const payload = { date, outlet, items: itemsList }
+    const payload = { date, cabang, items: itemsList }
     navigate('/confirm-po', { state: payload })
     setSubmitting(false)
   }
@@ -104,8 +104,8 @@ export function usePurchaseRequest() {
     setDate(e.target.value)
   }
 
-  const handleOutletChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setOutlet(e.target.value)
+  const handleCabangChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCabang(e.target.value)
   }
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,12 +125,12 @@ export function usePurchaseRequest() {
   }
 
   const isAddDisabled = !itemName || !unit || quantity <= 0
-  const isSubmitDisabled = submitting || !date || !outlet || itemsList.length === 0
+  const isSubmitDisabled = submitting || !date || !cabang || itemsList.length === 0
 
   return {
-    outlets,
+    cabangs,
     date,
-    outlet,
+    cabang,
     itemName,
     unit,
     quantity,
@@ -140,7 +140,7 @@ export function usePurchaseRequest() {
     itemsList,
     groupedItems,
     handleDateChange,
-    handleOutletChange,
+    handleCabangChange,
     handleQuantityChange,
     handleItemQuantityChange,
     handleRemoveItem,
@@ -152,4 +152,3 @@ export function usePurchaseRequest() {
     isSubmitDisabled,
   }
 }
-

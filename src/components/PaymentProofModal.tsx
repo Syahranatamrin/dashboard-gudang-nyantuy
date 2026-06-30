@@ -5,7 +5,7 @@ type Props = {
   isOpen: boolean
   onClose: () => void
   trxId: string
-  outlet: string
+  cabang: string
   invoice: string
   onSubmit: (trxId: string, file: File, invoice: string) => void
   isLoading?: boolean
@@ -20,7 +20,7 @@ export default function PaymentProofModal({
   isOpen,
   onClose,
   trxId,
-  outlet,
+  cabang,
   invoice,
   onSubmit,
   isLoading = false,
@@ -136,11 +136,11 @@ export default function PaymentProofModal({
                 </div>
 
                 <div className="control">
-                  <label className="label">Outlet</label>
+                  <label className="label">Cabang</label>
                   <input
                     type="text"
                     className="input"
-                    value={outlet}
+                    value={cabang}
                     readOnly
                     style={{ backgroundColor: '#f5f5f5' }}
                   />
@@ -279,11 +279,11 @@ export default function PaymentProofModal({
             </div>
 
             <div className="control">
-              <label className="label">Outlet</label>
+              <label className="label">Cabang</label>
               <input
                 type="text"
                 className="input"
-                value={outlet}
+                value={cabang}
                 readOnly
                 style={{ backgroundColor: '#f5f5f5' }}
               />

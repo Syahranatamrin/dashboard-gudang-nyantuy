@@ -10,13 +10,13 @@ type PaymentProofMetadata = {
 export async function submitPaymentProof(
   trxId: string,
   file: File,
-  outlet: string,
+  cabang: string,
   nomorInvoice?: string,
   metadata?: PaymentProofMetadata,
 ): Promise<boolean> {
   const formData = new FormData()
   formData.append('trxId', trxId)
-  formData.append('outlet', outlet)
+  formData.append('cabang', cabang)
   formData.append('file', file)
   if (nomorInvoice !== undefined) formData.append('nomorInvoice', nomorInvoice)
   if (metadata?.itemName) formData.append('itemName', metadata.itemName)
@@ -50,13 +50,13 @@ export async function submitPaymentProof(
 export async function submitStrukKaspinProof(
   trxId: string,
   file: File,
-  outlet: string,
+  cabang: string,
   nomorInvoice?: string,
   metadata?: PaymentProofMetadata,
 ): Promise<boolean> {
   const formData = new FormData()
   formData.append('trxId', trxId)
-  formData.append('outlet', outlet)
+  formData.append('cabang', cabang)
   formData.append('file', file)
 
   if (nomorInvoice !== undefined) formData.append('nomorInvoice', nomorInvoice)

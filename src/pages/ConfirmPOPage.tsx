@@ -8,7 +8,7 @@ import { buildFlatPOBody, submitBulkPO } from '../services/po'
 export default function ConfirmPOPage() {
   const navigate = useNavigate()
   const { state } = useLocation()
-  const data = (state as PRPayload) || { date: '', outlet: '', items: [] }
+  const data = (state as PRPayload) || { date: '', cabang: '', items: [] }
   const [submitting, setSubmitting] = useState(false)
 
   const items: LineItem[] = data.items || []
@@ -27,7 +27,7 @@ export default function ConfirmPOPage() {
     setSubmitting(true)
     try {
       // Build one big array of flat items
-      const flatPayloads = items.map(item => buildFlatPOBody(data.date, data.outlet, item))
+      const flatPayloads = items.map(item => buildFlatPOBody(data.date, data.cabang, item))
       
       const response = await submitBulkPO(flatPayloads)
 
@@ -117,7 +117,7 @@ export default function ConfirmPOPage() {
         <div style={{ maxWidth: 1120, margin: '0 auto' }}>
           <div className="form-grid" style={{ marginBottom: 16 }}>
             <div className="control"><div className="label">Tanggal PO</div><div>{data.date}</div></div>
-            <div className="control"><div className="label">Outlet</div><div>{data.outlet}</div></div>
+            <div className="control"><div className="label">Cabang</div><div>{data.cabang}</div></div>
             <div className="control"><div className="label">Total Keseluruhan</div><div style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '1.2rem' }}>{formatIDR(grandTotal)}</div></div>
           </div>
           <div className="actions" style={{ marginTop: 0 }}>

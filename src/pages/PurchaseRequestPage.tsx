@@ -5,9 +5,9 @@ import { usePurchaseRequest } from '../hooks/usePurchaseRequest'
 
 export default function PurchaseRequestPage() {
   const {
-    outlets,
+    cabangs,
     date,
-    outlet,
+    cabang,
     itemName,
     unit,
     quantity,
@@ -17,7 +17,7 @@ export default function PurchaseRequestPage() {
     itemsList,
     groupedItems,
     handleDateChange,
-    handleOutletChange,
+    handleCabangChange,
     handleQuantityChange,
     handleItemQuantityChange,
     handleRemoveItem,
@@ -44,10 +44,10 @@ export default function PurchaseRequestPage() {
             <input type="date" className="input" value={date} onChange={handleDateChange} />
           </div>
           <div className="control">
-            <label className="label">Outlet</label>
-            <select className="select" value={outlet} onChange={handleOutletChange}>
-              <option value="">Pilih Outlet</option>
-              {outlets.map(o => (<option key={o} value={o}>{o}</option>))}
+            <label className="label">Cabang</label>
+            <select className="select" value={cabang} onChange={handleCabangChange}>
+              <option value="">Pilih Cabang</option>
+              {cabangs.map(o => (<option key={o} value={o}>{o}</option>))}
             </select>
           </div>
           

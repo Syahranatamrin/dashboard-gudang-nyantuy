@@ -11,7 +11,7 @@ import {
   InventoryApprovalItem,
   InventoryApprovalStatus,
 } from '../types'
-import { OUTLETS } from '../constants'
+import { GUDANG } from '../constants'
 
 type SortOrder = 'desc' | 'asc'
 type Decision = 'Terima' | 'Tolak'
@@ -39,7 +39,7 @@ export default function InventoryApprovalPage() {
   const [items, setItems] = useState<InventoryApprovalItem[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [outlet, setOutlet] = useState('')
+  const [cabang, setCabang] = useState('')
   const [dataCache, setDataCache] = useState<Record<string, InventoryApprovalItem[]>>({})
 
   const [sort, setSort] = useState<SortOrder>('desc')
@@ -51,30 +51,30 @@ export default function InventoryApprovalPage() {
 
   // Refs untuk menghindari stale closure di dalam loadData
   const dataCacheRef = useRef(dataCache)
-  const outletRef = useRef(outlet)
+  const cabangRef = useRef(cabang)
   useEffect(() => {
     dataCacheRef.current = dataCache
   }, [dataCache])
   useEffect(() => {
-    outletRef.current = outlet
-  }, [outlet])
+    cabangRef.current = cabang
+  }, [cabang])
 
   const loadData = useCallback(async (forceRefresh = false) => {
-    const currentOutlet = outletRef.current
+    const currentCabang = cabangRef.current
     const cache = dataCacheRef.current
-    if (!forceRefresh && cache[currentOutlet] !== undefined) {
-      setItems(cache[currentOutlet])
+    if (!forceRefresh && cache[currentCabang] !== undefined) {
+      setItems(cache[currentCabang])
       return
     }
 
     setLoading(true)
     setError(null)
     try {
-      const data = await fetchInventoryApprovalItems(currentOutlet)
+      const data = await fetchInventoryApprovalItems(currentCabang)
       setItems(data)
       setDataCache(prev => ({
         ...prev,
-        [currentOutlet]: data,
+        [currentCabang]: data,
       }))
     } catch (e) {
       setError('Tidak dapat memuat data approval inventaris')
@@ -85,7 +85,7 @@ export default function InventoryApprovalPage() {
 
   useEffect(() => {
     loadData()
-  }, [outlet, loadData])
+  }, [cabang, loadData])
 
   const filtered = useMemo(() => {
     let base = items.filter(i => {
@@ -96,10 +96,10 @@ export default function InventoryApprovalPage() {
       return true
     })
 
-    if (outlet) base = base.filter(i => i.outlet === outlet)
+    if (cabang) base = base.filter(i => i.cabang === cabang)
 
     return base
-  }, [items, outlet, decided])
+  }, [items, cabang, decided])
 
   const sorted = useMemo(() => {
     const next = [...filtered].sort((a, b) => {
@@ -114,8 +114,8 @@ export default function InventoryApprovalPage() {
   const currentPage = Math.min(page, totalPages)
   const pageData = sorted.slice((currentPage - 1) * pageSize, currentPage * pageSize)
 
-  const handleOutletChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setOutlet(e.target.value)
+  const handleCabangChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCabang(e.target.value)
     setPage(1)
   }
 
@@ -137,15 +137,15 @@ export default function InventoryApprovalPage() {
       )
     })
     setDataCache(prev => {
-      const currentOutlet = outletRef.current
-      const list = prev[currentOutlet] || []
+      const currentCabang = cabangRef.current
+      const list = prev[currentCabang] || []
       const next = list.map(it =>
         it.trxId === item.trxId && it.itemId === item.itemId
           ? { ...it, status: decision }
           : it,
       )
       if (next === list) return prev
-      return { ...prev, [currentOutlet]: next }
+      return { ...prev, [currentCabang]: next }
     })
   }
 
@@ -154,7 +154,7 @@ export default function InventoryApprovalPage() {
     decision: Decision,
     reason?: string,
   ) => {
-    if (!item.trxId || !item.itemId || !item.outlet) {
+    if (!item.trxId || !item.itemId || !item.cabang) {
       alert('Data tidak lengkap untuk approval inventaris')
       return
     }
@@ -169,7 +169,7 @@ export default function InventoryApprovalPage() {
       await submitInventoryApproval({
         trxId: item.trxId,
         itemId: item.itemId,
-        outlet: item.outlet,
+        cabang: item.cabang,
         status: decision,
         alasan: decision === 'Tolak' ? reason : undefined,
       })
@@ -211,10 +211,10 @@ export default function InventoryApprovalPage() {
       <section className="panel">
         <div className="form-grid">
           <div className="control">
-            <label className="label">Filter Outlet</label>
-            <select className="select" value={outlet} onChange={handleOutletChange}>
-              <option value="">Semua Outlet</option>
-              {OUTLETS.map(o => (<option key={o} value={o}>{o}</option>))}
+            <label className="label">Filter Cabang</label>
+            <select className="select" value={cabang} onChange={handleCabangChange}>
+              <option value="">Semua Cabang</option>
+              {GUDANG.map(o => (<option key={o} value={o}>{o}</option>))}
             </select>
           </div>
           <div className="control">
@@ -264,7 +264,7 @@ export default function InventoryApprovalPage() {
                 date={i.date}
                 itemId={i.itemId}
                 itemName={i.itemName}
-                outlet={i.outlet}
+                cabang={i.cabang}
                 spesifikasi={i.spesifikasi}
                 quantity={i.quantity}
                 totalEstimasiBiaya={i.totalEstimasiBiaya}

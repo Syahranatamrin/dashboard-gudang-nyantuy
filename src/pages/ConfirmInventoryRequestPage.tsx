@@ -10,7 +10,7 @@ export default function ConfirmInventoryRequestPage() {
   const { state } = useLocation()
   const data = (state as InventoryRequestSubmitPayload) || {
     date: '',
-    outlet: '',
+    cabang: '',
     note: '',
     items: [],
   }
@@ -24,7 +24,7 @@ export default function ConfirmInventoryRequestPage() {
     try {
       const body = buildInventoryRequestBody(
         data.date,
-        data.outlet,
+        data.cabang,
         data.note,
         items,
       )
@@ -43,7 +43,7 @@ export default function ConfirmInventoryRequestPage() {
             quantity: it.quantity,
             id: it.id,
           })),
-          outlet: data.outlet,
+          cabang: data.cabang,
         },
       })
     } catch (e) {
@@ -66,7 +66,7 @@ export default function ConfirmInventoryRequestPage() {
       <section className="panel" style={{ marginBottom: 16 }}>
         <div className="form-grid" style={{ marginBottom: 8 }}>
           <div className="control"><div className="label">Tanggal Permintaan</div><div>{data.date || '-'}</div></div>
-          <div className="control"><div className="label">Outlet</div><div>{data.outlet || '-'}</div></div>
+          <div className="control"><div className="label">Cabang</div><div>{data.cabang || '-'}</div></div>
         </div>
         {data.note && (
           <div className="control" style={{ marginTop: 8 }}>

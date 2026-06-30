@@ -4,7 +4,7 @@ import ApprovalCard from '../components/ApprovalCard'
 import Pagination from '../components/Pagination'
 import { fetchApprovalItems, submitFinanceVerification } from '../services/approval'
 import { ApprovalItem, ApprovalStatus } from '../types'
-import { OUTLETS } from '../constants'
+import { GUDANG } from '../constants'
 
 type SortOrder = 'desc' | 'asc'
 
@@ -12,9 +12,9 @@ export default function ApprovalPage() {
   const [items, setItems] = useState<ApprovalItem[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [outlet, setOutlet] = useState('')
+  const [cabang, setCabang] = useState('')
   
-  // Cache data per outlet untuk menghindari request berulang
+  // Cache data per cabang untuk menghindari request berulang
   const [dataCache, setDataCache] = useState<Record<string, ApprovalItem[]>>({})
 
   const [status, setStatus] = useState('')
@@ -26,22 +26,22 @@ export default function ApprovalPage() {
 
   const loadData = async (forceRefresh = false) => {
     // Jika data sudah ada di cache dan tidak dipaksa refresh, gunakan cache
-    if (!forceRefresh && dataCache[outlet] !== undefined) {
-      setItems(dataCache[outlet])
+    if (!forceRefresh && dataCache[cabang] !== undefined) {
+      setItems(dataCache[cabang])
       return
     }
 
     setLoading(true)
     setError(null)
     try {
-      // Pass outlet ke API untuk server-side filtering
-      const data = await fetchApprovalItems(outlet)
+      // Pass cabang ke API untuk server-side filtering
+      const data = await fetchApprovalItems(cabang)
       setItems(data)
       
       // Simpan ke cache
       setDataCache(prev => ({
         ...prev,
-        [outlet]: data
+        [cabang]: data
       }))
     } catch (e) {
       setError('Tidak dapat memuat data approval')
@@ -52,7 +52,7 @@ export default function ApprovalPage() {
 
   useEffect(() => {
     loadData()
-  }, [outlet]) // Refetch saat outlet berubah
+  }, [cabang]) // Refetch saat cabang berubah
 
   const filtered = useMemo(() => {
     // Filter data yang VerifikasiFinance = Pending (VerifikasiSPV diabaikan)
@@ -61,15 +61,15 @@ export default function ApprovalPage() {
       return i.status === 'Pending' || acceptedKeys[key]
     })
     
-    // Client-side filter masih berguna jika API mengembalikan semua data saat outlet=''
+    // Client-side filter masih berguna jika API mengembalikan semua data saat cabang=''
     // atau untuk memastikan data benar-benar sesuai
-    if (outlet) base = base.filter(i => i.outlet === outlet)
+    if (cabang) base = base.filter(i => i.cabang === cabang)
     
     // Hapus filter status dari UI karena sudah difilter di awal (hanya 'Pending')
     // Tapi jika user ingin filter lagi (misal status pembayaran), bisa ditambahkan logic lain
     
     return base
-  }, [items, outlet, acceptedKeys])
+  }, [items, cabang, acceptedKeys])
 
   const sorted = useMemo(() => {
     const toTime = (d?: string) => (d ? new Date(d).getTime() || 0 : 0)
@@ -85,8 +85,8 @@ export default function ApprovalPage() {
   const currentPage = Math.min(page, totalPages)
   const pageData = sorted.slice((currentPage - 1) * pageSize, currentPage * pageSize)
 
-  const handleOutletChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setOutlet(e.target.value)
+  const handleCabangChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCabang(e.target.value)
     setPage(1)
   }
 
@@ -101,7 +101,7 @@ export default function ApprovalPage() {
   }
 
   const handleAccept = async (item: ApprovalItem) => {
-    if (!item.trxId || !item.itemId || !item.outlet) {
+    if (!item.trxId || !item.itemId || !item.cabang) {
       alert('Data tidak lengkap untuk verifikasi finance')
       return
     }
@@ -112,7 +112,7 @@ export default function ApprovalPage() {
       await submitFinanceVerification({
         trxId: item.trxId,
         itemId: item.itemId,
-        outlet: item.outlet,
+        cabang: item.cabang,
         nomorInvoice: item.nomorInvoice || '',
       })
       setAcceptedKeys(prev => ({ ...prev, [key]: true }))
@@ -124,7 +124,7 @@ export default function ApprovalPage() {
         )
         setDataCache(cache => ({
           ...cache,
-          [outlet]: next
+          [cabang]: next
         }))
         return next
       })
@@ -146,10 +146,10 @@ export default function ApprovalPage() {
       <section className="panel">
         <div className="form-grid">
           <div className="control">
-            <label className="label">Filter Outlet</label>
-            <select className="select" value={outlet} onChange={handleOutletChange}>
-              <option value="">Semua Outlet</option>
-              {OUTLETS.map(o => (<option key={o} value={o}>{o}</option>))}
+            <label className="label">Filter Cabang</label>
+            <select className="select" value={cabang} onChange={handleCabangChange}>
+              <option value="">Semua Cabang</option>
+              {GUDANG.map(o => (<option key={o} value={o}>{o}</option>))}
             </select>
           </div>
           {/* Filter Status dihapus karena data sudah difilter: Finance=Pending (VerifikasiSPV diabaikan) */}
@@ -181,7 +181,7 @@ export default function ApprovalPage() {
               date={i.date}
               itemId={i.itemId}
               itemName={i.itemName}
-              outlet={i.outlet}
+              cabang={i.cabang}
               supplier={i.supplier}
               unit={i.unit}
               quantity={i.quantity}

@@ -27,12 +27,12 @@ function parseBool(val: unknown): boolean {
 }
 
 export async function fetchInventoryApprovalItems(
-  outlet?: string,
+  cabang?: string,
 ): Promise<InventoryApprovalItem[]> {
   try {
     let url = WEBHOOK_LIST_PENGAJUAN_PERALATAN
     const separator = url.includes('?') ? '&' : '?'
-    url = `${url}${separator}outlet=${encodeURIComponent(outlet || '')}`
+    url = `${url}${separator}cabang=${encodeURIComponent(cabang || '')}`
 
     const res = await fetch(url, {
       headers: { Accept: 'application/json' },
@@ -57,10 +57,10 @@ export async function fetchInventoryApprovalItems(
     const list = Array.isArray(data) ? data : data?.data || data?.items || []
 
     return list.map((row: any): InventoryApprovalItem => {
-      const rowOutlet =
-        row.outlet ||
-        row.Outlet ||
-        row.OUTLET ||
+      const rowCabang =
+        row.cabang ||
+        row.Cabang ||
+        row.CABANG ||
         '-'
       const itemIdRaw =
         row['ID Peralatan'] ||
@@ -81,7 +81,7 @@ export async function fetchInventoryApprovalItems(
         trxId: normalizeText(trxIdRaw || `ROW-${row.row_number ?? Math.random().toString(36).slice(2, 8)}`),
         date: normalizeText(row['Tanggal Pengajuan'] || row['tanggal pengajuan'] || row.date || ''),
         tanggalTerima: normalizeText(row['Tanggal Terima'] || row['tanggal terima'] || ''),
-        outlet: normalizeText(rowOutlet),
+        cabang: normalizeText(rowCabang),
         itemId: normalizeText(itemIdRaw),
         itemName: normalizeText(
           row['Nama Peralatan'] ||

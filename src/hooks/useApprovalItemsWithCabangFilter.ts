@@ -6,32 +6,32 @@ type UseApprovalItemsResult = {
   items: ApprovalItem[]
   loading: boolean
   error: string | null
-  outletFilter: string
-  setOutletFilter: (value: string) => void
+  cabangFilter: string
+  setCabangFilter: (value: string) => void
   loadData: (forceRefresh?: boolean) => Promise<void>
 }
 
-export function useApprovalItemsWithOutletFilter(defaultErrorMessage: string): UseApprovalItemsResult {
+export function useApprovalItemsWithCabangFilter(defaultErrorMessage: string): UseApprovalItemsResult {
   const [items, setItems] = useState<ApprovalItem[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [outletFilter, setOutletFilter] = useState('')
+  const [cabangFilter, setCabangFilter] = useState('')
   const [dataCache, setDataCache] = useState<Record<string, ApprovalItem[]>>({})
 
   const loadData = async (forceRefresh = false) => {
-    if (!forceRefresh && dataCache[outletFilter] !== undefined) {
-      setItems(dataCache[outletFilter])
+    if (!forceRefresh && dataCache[cabangFilter] !== undefined) {
+      setItems(dataCache[cabangFilter])
       return
     }
 
     setLoading(true)
     setError(null)
     try {
-      const data = await fetchApprovalItems(outletFilter)
+      const data = await fetchApprovalItems(cabangFilter)
       setItems(data)
       setDataCache((prev) => ({
         ...prev,
-        [outletFilter]: data,
+        [cabangFilter]: data,
       }))
     } catch (e) {
       setError(defaultErrorMessage)
@@ -42,15 +42,14 @@ export function useApprovalItemsWithOutletFilter(defaultErrorMessage: string): U
 
   useEffect(() => {
     loadData()
-  }, [outletFilter])
+  }, [cabangFilter])
 
   return {
     items,
     loading,
     error,
-    outletFilter,
-    setOutletFilter,
+    cabangFilter,
+    setCabangFilter,
     loadData,
   }
 }
-

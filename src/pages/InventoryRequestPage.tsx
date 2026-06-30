@@ -7,9 +7,9 @@ import { formatIDR } from '../utils/format'
 
 export default function InventoryRequestPage() {
   const {
-    outlets,
+    cabangs,
     date,
-    outlet,
+    cabang,
     note,
     itemName,
     unit,
@@ -18,7 +18,7 @@ export default function InventoryRequestPage() {
     submitting,
     itemsList,
     handleDateChange,
-    handleOutletChange,
+    handleCabangChange,
     handleNoteChange,
     handleQuantityChange,
     handleItemQuantityChange,
@@ -45,10 +45,10 @@ export default function InventoryRequestPage() {
             <input type="date" className="input" value={date} onChange={handleDateChange} />
           </div>
           <div className="control">
-            <label className="label">Outlet</label>
-            <select className="select" value={outlet} onChange={handleOutletChange}>
-              <option value="">Pilih Outlet</option>
-              {outlets.map(o => (<option key={o} value={o}>{o}</option>))}
+            <label className="label">Cabang</label>
+            <select className="select" value={cabang} onChange={handleCabangChange}>
+              <option value="">Pilih Cabang</option>
+              {cabangs.map(o => (<option key={o} value={o}>{o}</option>))}
             </select>
           </div>
 

@@ -11,7 +11,7 @@ export default function ConfirmPerlengkapanPage() {
   const { state } = useLocation()
   const data = (state as PerlengkapanRequestSubmitPayload) || {
     date: '',
-    outlet: '',
+    cabang: '',
     items: [],
   }
   const [submitting, setSubmitting] = useState(false)
@@ -25,7 +25,7 @@ export default function ConfirmPerlengkapanPage() {
     try {
       const body = buildPerlengkapanRequestBody(
         data.date,
-        data.outlet,
+        data.cabang,
         items,
       )
 
@@ -47,7 +47,7 @@ export default function ConfirmPerlengkapanPage() {
             coaDescription: it.coaDescription,
             category: it.category,
           })),
-          outlet: data.outlet,
+          cabang: data.cabang,
         },
       })
     } catch (e) {
@@ -70,7 +70,7 @@ export default function ConfirmPerlengkapanPage() {
       <section className="panel" style={{ marginBottom: 16 }}>
         <div className="form-grid" style={{ marginBottom: 8 }}>
           <div className="control"><div className="label">Tanggal</div><div>{data.date || '-'}</div></div>
-          <div className="control"><div className="label">Outlet</div><div>{data.outlet || '-'}</div></div>
+          <div className="control"><div className="label">Cabang</div><div>{data.cabang || '-'}</div></div>
         </div>
       </section>
 

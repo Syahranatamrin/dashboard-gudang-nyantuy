@@ -15,7 +15,7 @@ export type LineItem = {
 
 export type PRPayload = {
   date: string
-  outlet: string
+  cabang: string
   items: LineItem[]
 }
 
@@ -27,7 +27,7 @@ export type ApprovalItem = {
   date?: string
   itemId?: string
   itemName: string
-  outlet: string
+  cabang: string
   supplier: string
   unit: string
   quantity: number
@@ -60,7 +60,7 @@ export type ItemRow = {
 export type POWebhookPayload = {
   version: string
   'Tanggal PO': string
-  Outlet: string
+  Cabang: string
   'Nama Supplier': string
   'Nomor WhatsApp': string
   'Grand Total': number
@@ -78,7 +78,7 @@ export type POWebhookPayload = {
 export type FlatPOPayload = {
   version: string
   'Tanggal PO': string
-  Outlet: string
+  Cabang: string
   'Nama Supplier': string
   'Nomor WhatsApp': string
   'ID BARANG': string
@@ -96,7 +96,7 @@ export type InventoryApprovalItem = {
   trxId: string
   date?: string
   tanggalTerima?: string
-  outlet: string
+  cabang: string
   itemId: string
   itemName: string
   spesifikasi?: string
@@ -113,7 +113,7 @@ export type InventoryApprovalItem = {
 export type InventoryApprovalPayload = {
   trxId: string
   itemId: string
-  outlet: string
+  cabang: string
   status: 'Terima' | 'Tolak'
   alasan?: string
 }

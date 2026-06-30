@@ -1,22 +1,22 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { LineItem, ItemRow } from '../types'
-import { OUTLETS } from '../constants'
+import { GUDANG } from '../constants'
 
 type GroupedItems = Record<string, LineItem[]>
 
 export type PerlengkapanRequestSubmitPayload = {
   date: string
-  outlet: string
+  cabang: string
   items: LineItem[]
 }
 
 export function usePerlengkapanRequest() {
   const navigate = useNavigate()
-  const outlets = OUTLETS
+  const cabangs = GUDANG
 
   const [date, setDate] = useState<string>(new Date().toISOString().slice(0, 10))
-  const [outlet, setOutlet] = useState<string>('')
+  const [cabang, setCabang] = useState<string>('')
   const [itemId, setItemId] = useState<string>('')
   const [itemName, setItemName] = useState<string>('')
   const [unit, setUnit] = useState<string>('')
@@ -92,7 +92,7 @@ export function usePerlengkapanRequest() {
   }, [itemsList])
 
   const handleSubmit = () => {
-    if (!date || !outlet) return
+    if (!date || !cabang) return
     if (itemsList.length === 0) {
       alert('Tambahkan minimal satu barang ke daftar sebelum mengirim.')
       return
@@ -100,7 +100,7 @@ export function usePerlengkapanRequest() {
     setSubmitting(true)
     const payload: PerlengkapanRequestSubmitPayload = {
       date,
-      outlet,
+      cabang,
       items: itemsList,
     }
     navigate('/confirm-perlengkapan', { state: payload })
@@ -111,8 +111,8 @@ export function usePerlengkapanRequest() {
     setDate(e.target.value)
   }
 
-  const handleOutletChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setOutlet(e.target.value)
+  const handleCabangChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCabang(e.target.value)
   }
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -148,12 +148,12 @@ export function usePerlengkapanRequest() {
   }
 
   const isAddDisabled = !itemName || !unit || quantity <= 0
-  const isSubmitDisabled = submitting || !date || !outlet || itemsList.length === 0
+  const isSubmitDisabled = submitting || !date || !cabang || itemsList.length === 0
 
   return {
-    outlets,
+    cabangs,
     date,
-    outlet,
+    cabang,
     itemName,
     unit,
     quantity,
@@ -165,7 +165,7 @@ export function usePerlengkapanRequest() {
     itemsList,
     groupedItems,
     handleDateChange,
-    handleOutletChange,
+    handleCabangChange,
     handleQuantityChange,
     handlePriceChange,
     handleCoaChange,

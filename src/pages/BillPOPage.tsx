@@ -5,13 +5,13 @@ import Pagination from '../components/Pagination'
 import PaymentProofModal from '../components/PaymentProofModal'
 import { submitPaymentProof } from '../services/payment'
 import { ApprovalItem } from '../types'
-import { OUTLETS } from '../constants'
-import { useApprovalItemsWithOutletFilter } from '../hooks/useApprovalItemsWithOutletFilter'
+import { GUDANG } from '../constants'
+import { useApprovalItemsWithCabangFilter } from '../hooks/useApprovalItemsWithCabangFilter'
 
 interface BillGroup {
   invoice: string
   trxId: string
-  outlet: string
+  cabang: string
   items: ApprovalItem[]
   date?: string
 }
@@ -23,10 +23,10 @@ export default function BillPOPage() {
     items,
     loading,
     error,
-    outletFilter,
-    setOutletFilter,
+    cabangFilter,
+    setCabangFilter,
     loadData,
-  } = useApprovalItemsWithOutletFilter('Tidak dapat memuat data tagihan')
+  } = useApprovalItemsWithCabangFilter('Tidak dapat memuat data tagihan')
 
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -34,35 +34,35 @@ export default function BillPOPage() {
   const [modalState, setModalState] = useState<{
     isOpen: boolean
     trxId: string
-    outlet: string
+    cabang: string
     invoice: string
     isSubmitting: boolean
   }>({
     isOpen: false,
     trxId: '',
-    outlet: '',
+    cabang: '',
     invoice: '',
     isSubmitting: false
   })
 
-  // Group items by nomorInvoice AND outlet
+  // Group items by nomorInvoice AND cabang
   const groupedItems = useMemo<BillGroup[]>(() => {
     // 1. Filter items
     const filtered = items.filter(item => {
       const isHutang = (item.statusPembayaran || '').toLowerCase() === 'hutang'
       const isValidStatus = ['Terima', 'Pending'].includes(item.status || '')
-      const matchesOutlet = !outletFilter || item.outlet === outletFilter
+      const matchesCabang = !cabangFilter || item.cabang === cabangFilter
       const inv = (item.nomorInvoice || '').trim()
       const hasInvoice = inv.length > 0
-      return isHutang && isValidStatus && matchesOutlet && hasInvoice
+      return isHutang && isValidStatus && matchesCabang && hasInvoice
     })
 
     // 2. Group by composite key
     const groups: Record<string, ApprovalItem[]> = {}
     filtered.forEach(item => {
       const inv = (item.nomorInvoice || '').trim() || 'UNKNOWN'
-      const outlet = item.outlet || 'UNKNOWN'
-      const key = `${inv}||${outlet}`
+      const cabang = item.cabang || 'UNKNOWN'
+      const key = `${inv}||${cabang}`
       
       if (!groups[key]) groups[key] = []
       groups[key].push(item)
@@ -71,11 +71,11 @@ export default function BillPOPage() {
     // 3. Convert to array and sort
     return Object.entries(groups)
       .map(([key, groupItems]) => {
-        const [invoice, outlet] = key.split('||')
+        const [invoice, cabang] = key.split('||')
         return {
           invoice,
           trxId: groupItems[0]?.trxId || 'UNKNOWN',
-          outlet,
+          cabang,
           items: groupItems,
           date: groupItems[0]?.date
         }
@@ -85,7 +85,7 @@ export default function BillPOPage() {
          const db = b.date ? new Date(b.date).getTime() : 0
          return db - da
       })
-  }, [items, outletFilter])
+  }, [items, cabangFilter])
 
   // Pagination Logic
   const totalPages = Math.ceil(groupedItems.length / ITEMS_PER_PAGE)
@@ -94,12 +94,12 @@ export default function BillPOPage() {
     currentPage * ITEMS_PER_PAGE
   )
 
-  const handleOpenModal = (trxId: string, outletName: string, invoiceNumber: string) => {
+  const handleOpenModal = (trxId: string, cabangName: string, invoiceNumber: string) => {
     setModalState(prev => ({
       ...prev,
       isOpen: true,
       trxId: trxId,
-      outlet: outletName,
+      cabang: cabangName,
       invoice: invoiceNumber
     }))
   }
@@ -109,19 +109,19 @@ export default function BillPOPage() {
       ...prev,
       isOpen: false,
       trxId: '',
-      outlet: ''
+      cabang: ''
     }))
   }
 
-  const handleOutletFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setOutletFilter(e.target.value)
+  const handleCabangFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCabangFilter(e.target.value)
     setCurrentPage(1)
   }
 
   const handleSubmitPaymentProof = async (trxId: string, file: File, invoiceNumber: string) => {
     setModalState(prev => ({ ...prev, isSubmitting: true }))
     try {
-      const success = await submitPaymentProof(trxId, file, modalState.outlet, invoiceNumber)
+      const success = await submitPaymentProof(trxId, file, modalState.cabang, invoiceNumber)
       if (success) {
         alert(`Bukti pembayaran untuk ${trxId} berhasil dikirim!`)
         handleCloseModal()
@@ -157,10 +157,10 @@ export default function BillPOPage() {
       <>
         {paginatedItems.map((group) => (
           <BillCard
-            key={`${group.invoice}-${group.outlet}`}
+            key={`${group.invoice}-${group.cabang}`}
             trxId={group.trxId}
             items={group.items}
-            onInputPaymentProof={() => handleOpenModal(group.trxId, group.outlet, group.invoice)}
+            onInputPaymentProof={() => handleOpenModal(group.trxId, group.cabang, group.invoice)}
             invoice={group.invoice}
             ctaLabel="Input Bukti Pembayaran"
           />
@@ -186,14 +186,14 @@ export default function BillPOPage() {
       <section className="panel" style={{ marginBottom: 24 }}>
         <div className="form-grid">
           <div className="control">
-            <label className="label">Filter Outlet</label>
+            <label className="label">Filter Cabang</label>
             <select 
               className="select" 
-              value={outletFilter} 
-              onChange={handleOutletFilterChange}
+              value={cabangFilter} 
+              onChange={handleCabangFilterChange}
             >
-              <option value="">Semua Outlet</option>
-              {OUTLETS.map(o => (<option key={o} value={o}>{o}</option>))}
+              <option value="">Semua Cabang</option>
+              {GUDANG.map(o => (<option key={o} value={o}>{o}</option>))}
             </select>
           </div>
         </div>
@@ -207,7 +207,7 @@ export default function BillPOPage() {
         isOpen={modalState.isOpen}
         onClose={handleCloseModal}
         trxId={modalState.trxId}
-        outlet={modalState.outlet}
+        cabang={modalState.cabang}
         invoice={modalState.invoice}
         onSubmit={handleSubmitPaymentProof}
         isLoading={modalState.isSubmitting}

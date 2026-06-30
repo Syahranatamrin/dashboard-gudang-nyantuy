@@ -3,7 +3,7 @@ import { WEBHOOK_INPUT_PO_V3 } from '../config'
 
 const INPUT_WEBHOOK_URL = WEBHOOK_INPUT_PO_V3
 
-export function buildConfirmBody(date: string, outlet: string, items: LineItem[]): POWebhookPayload {
+export function buildConfirmBody(date: string, cabang: string, items: LineItem[]): POWebhookPayload {
   const headerSupplier = items[0]?.supplier || ''
   const headerPhone = items[0]?.phone || ''
   const waNumber = (headerPhone || '').replace(/[^0-9]/g, '')
@@ -11,7 +11,7 @@ export function buildConfirmBody(date: string, outlet: string, items: LineItem[]
   return {
     version: 'v2',
     'Tanggal PO': date,
-    Outlet: outlet,
+    Cabang: cabang,
     'Nama Supplier': headerSupplier || '',
     'Nomor WhatsApp': waNumber || '',
     'Grand Total': grandTotal,
@@ -27,13 +27,13 @@ export function buildConfirmBody(date: string, outlet: string, items: LineItem[]
   }
 }
 
-export function buildFlatPOBody(date: string, outlet: string, item: LineItem): FlatPOPayload {
+export function buildFlatPOBody(date: string, cabang: string, item: LineItem): FlatPOPayload {
   const phone = item.phone || ''
   const waNumber = phone.replace(/[^0-9]/g, '')
   return {
     version: 'v2',
     'Tanggal PO': date,
-    Outlet: outlet,
+    Cabang: cabang,
     'Nama Supplier': item.supplier || '',
     'Nomor WhatsApp': waNumber || '',
     'ID BARANG': item.id || '',

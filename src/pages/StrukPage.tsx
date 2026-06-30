@@ -5,13 +5,13 @@ import Pagination from '../components/Pagination'
 import PaymentProofModal from '../components/PaymentProofModal'
 import { submitStrukKaspinProof } from '../services/payment'
 import { ApprovalItem } from '../types'
-import { OUTLETS } from '../constants'
-import { useApprovalItemsWithOutletFilter } from '../hooks/useApprovalItemsWithOutletFilter'
+import { GUDANG } from '../constants'
+import { useApprovalItemsWithCabangFilter } from '../hooks/useApprovalItemsWithCabangFilter'
 
 interface BillGroup {
   invoice: string
   trxId: string
-  outlet: string
+  cabang: string
   items: ApprovalItem[]
   date?: string
 }
@@ -23,10 +23,10 @@ export default function StrukPage() {
     items,
     loading,
     error,
-    outletFilter,
-    setOutletFilter,
+    cabangFilter,
+    setCabangFilter,
     loadData,
-  } = useApprovalItemsWithOutletFilter('Tidak dapat memuat data struk')
+  } = useApprovalItemsWithCabangFilter('Tidak dapat memuat data struk')
 
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -34,7 +34,7 @@ export default function StrukPage() {
   const [modalState, setModalState] = useState<{
     isOpen: boolean
     trxId: string
-    outlet: string
+    cabang: string
     invoice: string
     isSubmitting: boolean
     itemName: string
@@ -44,7 +44,7 @@ export default function StrukPage() {
   }>({
     isOpen: false,
     trxId: '',
-    outlet: '',
+    cabang: '',
     invoice: '',
     isSubmitting: false,
     itemName: '',
@@ -55,18 +55,18 @@ export default function StrukPage() {
 
   const groupedItems = useMemo<BillGroup[]>(() => {
     const filtered = items.filter(item => {
-      const matchesOutlet = !outletFilter || item.outlet === outletFilter
+      const matchesCabang = !cabangFilter || item.cabang === cabangFilter
       const inv = (item.nomorInvoice || '').trim()
       const hasInvoice = inv.length > 0
       const isInputKaspin = item.inputKaspin === false
-      return matchesOutlet && hasInvoice && isInputKaspin
+      return matchesCabang && hasInvoice && isInputKaspin
     })
 
     return filtered
       .map((item) => ({
         invoice: (item.nomorInvoice || '').trim() || 'UNKNOWN',
         trxId: item.trxId || 'UNKNOWN',
-        outlet: item.outlet || 'UNKNOWN',
+        cabang: item.cabang || 'UNKNOWN',
         items: [item],
         date: item.date,
       }))
@@ -75,7 +75,7 @@ export default function StrukPage() {
          const db = b.date ? new Date(b.date).getTime() : 0
          return db - da
       })
-  }, [items, outletFilter])
+  }, [items, cabangFilter])
 
   // Pagination Logic
   const totalPages = Math.ceil(groupedItems.length / ITEMS_PER_PAGE)
@@ -89,7 +89,7 @@ export default function StrukPage() {
       ...prev,
       isOpen: true,
       trxId: item.trxId,
-      outlet: item.outlet,
+      cabang: item.cabang,
       invoice: item.nomorInvoice || '',
       itemName: item.itemName,
       hargaKonversiResep: item.hargaKonversiResep,
@@ -103,20 +103,20 @@ export default function StrukPage() {
       ...prev,
       isOpen: false,
       trxId: '',
-      outlet: '',
+      cabang: '',
       itemName: '',
     }))
   }
 
-  const handleOutletFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setOutletFilter(e.target.value)
+  const handleCabangFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCabangFilter(e.target.value)
     setCurrentPage(1)
   }
 
   const handleSubmitPaymentProof = async (trxId: string, file: File, invoiceNumber: string) => {
     setModalState(prev => ({ ...prev, isSubmitting: true }))
     try {
-      const success = await submitStrukKaspinProof(trxId, file, modalState.outlet, invoiceNumber, {
+      const success = await submitStrukKaspinProof(trxId, file, modalState.cabang, invoiceNumber, {
         itemName: modalState.itemName,
         hargaKonversiResep: modalState.hargaKonversiResep,
         jumlahKonversiResep: modalState.jumlahKonversiResep,
@@ -159,7 +159,7 @@ export default function StrukPage() {
           const item = group.items[0]
           return (
             <BillCard
-              key={`${group.trxId}-${group.outlet}-${group.invoice}-${item?.itemId || 'item'}`}
+              key={`${group.trxId}-${group.cabang}-${group.invoice}-${item?.itemId || 'item'}`}
               trxId={group.trxId}
               items={group.items}
               onInputPaymentProof={() => handleOpenModal(item)}
@@ -184,14 +184,14 @@ export default function StrukPage() {
       <section className="panel" style={{ marginBottom: 24 }}>
         <div className="form-grid">
           <div className="control">
-            <label className="label">Filter Outlet</label>
+            <label className="label">Filter Cabang</label>
             <select 
               className="select" 
-              value={outletFilter} 
-              onChange={handleOutletFilterChange}
+              value={cabangFilter} 
+              onChange={handleCabangFilterChange}
             >
-              <option value="">Semua Outlet</option>
-              {OUTLETS.map(o => (<option key={o} value={o}>{o}</option>))}
+              <option value="">Semua Cabang</option>
+              {GUDANG.map(o => (<option key={o} value={o}>{o}</option>))}
             </select>
           </div>
         </div>
@@ -213,7 +213,7 @@ export default function StrukPage() {
         isOpen={modalState.isOpen}
         onClose={handleCloseModal}
         trxId={modalState.trxId}
-        outlet={modalState.outlet}
+        cabang={modalState.cabang}
         invoice={modalState.invoice}
         onSubmit={handleSubmitPaymentProof}
         isLoading={modalState.isSubmitting}

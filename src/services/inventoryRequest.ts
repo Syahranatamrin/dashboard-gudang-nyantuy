@@ -6,7 +6,7 @@ const INPUT_WEBHOOK_URL = WEBHOOK_INPUT_INVENTORY_REQUEST
 export type InventoryRequestPayload = {
   version: string
   'Tanggal Permintaan': string
-  Outlet: string
+  Cabang: string
   Keterangan: string
   Status: string
   Items: Array<{
@@ -23,14 +23,14 @@ export type InventoryRequestPayload = {
 
 export function buildInventoryRequestBody(
   date: string,
-  outlet: string,
+  cabang: string,
   note: string,
   items: LineItem[],
 ): InventoryRequestPayload {
   return {
     version: 'v1',
     'Tanggal Permintaan': date,
-    Outlet: outlet,
+    Cabang: cabang,
     Keterangan: note,
     Status: 'Submitted',
     Items: items.map(it => {
