@@ -3,8 +3,6 @@ import Header from '../components/Header'
 import ItemSearchDropdown from '../components/ItemSearchDropdown'
 import { useInventoryRequest } from '../hooks/useInventoryRequest'
 import { fetchInventoryRequestItems } from '../services/items'
-import { formatIDR } from '../utils/format'
-
 export default function InventoryRequestPage() {
   const {
     cabangs,
@@ -21,6 +19,7 @@ export default function InventoryRequestPage() {
     handleCabangChange,
     handleNoteChange,
     handleQuantityChange,
+    handlePriceChange,
     handleItemQuantityChange,
     handleRemoveItem,
     handleSubmit,
@@ -73,12 +72,16 @@ export default function InventoryRequestPage() {
             />
           </div>
           <div className="control">
-            <label className="label">Total Harga</label>
+            <label className="label">Satuan Harga</label>
             <input
+              type="number"
+              min={0}
+              step={1}
               className="input"
-              readOnly
-              value={price > 0 ? formatIDR(price * (Number(quantity) || 0)) : 'Harga -'}
-              title="Total Harga"
+              value={price || ''}
+              onChange={handlePriceChange}
+              placeholder="Masukkan harga satuan"
+              title="Satuan Harga"
               style={{
                 fontWeight: 600,
                 color: 'var(--primary)',

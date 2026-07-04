@@ -44,7 +44,7 @@ export function useInventoryRequest() {
     if (item) {
       setItemId(item.id || '')
       setUnit(item.unit)
-      setPrice(item.price || 0)
+      setPrice(0)
       setBrand(item.brand || '')
       setSpecification(item.specification || '')
     }
@@ -60,7 +60,7 @@ export function useInventoryRequest() {
     if (idx >= 0) {
       const next = [...itemsList]
       const prev = next[idx]
-      next[idx] = { ...prev, quantity: prev.quantity + quantity }
+      next[idx] = { ...prev, quantity: prev.quantity + quantity, price }
       setItemsList(next)
     } else {
       setItemsList([
@@ -122,6 +122,10 @@ export function useInventoryRequest() {
     setQuantity(Number(e.target.value))
   }
 
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPrice(Math.max(0, Number(e.target.value) || 0))
+  }
+
   const handleItemQuantityChange = (idx: number, val: number) => {
     const q = val || 1
     const next = [...itemsList]
@@ -134,7 +138,7 @@ export function useInventoryRequest() {
     setItemsList(next)
   }
 
-  const isAddDisabled = !itemName || !unit || quantity <= 0
+  const isAddDisabled = !itemName || !unit || quantity <= 0 || price <= 0
   const isSubmitDisabled = submitting || !date || !cabang || itemsList.length === 0
 
   return {
@@ -153,6 +157,7 @@ export function useInventoryRequest() {
     handleCabangChange,
     handleNoteChange,
     handleQuantityChange,
+    handlePriceChange,
     handleItemQuantityChange,
     handleRemoveItem,
     handleSubmit,
