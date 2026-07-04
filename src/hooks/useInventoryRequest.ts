@@ -47,6 +47,11 @@ export function useInventoryRequest() {
       setPrice(0)
       setBrand(item.brand || '')
       setSpecification(item.specification || '')
+    } else {
+      setItemId('')
+      setUnit('')
+      setBrand('')
+      setSpecification('')
     }
   }
 
@@ -122,6 +127,10 @@ export function useInventoryRequest() {
     setQuantity(Number(e.target.value))
   }
 
+  const handleUnitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUnit(e.target.value)
+  }
+
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPrice(Math.max(0, Number(e.target.value) || 0))
   }
@@ -140,6 +149,7 @@ export function useInventoryRequest() {
 
   const isAddDisabled = !itemName || !unit || quantity <= 0 || price <= 0
   const isSubmitDisabled = submitting || !date || !cabang || itemsList.length === 0
+  const isCustomItem = !itemId && !!itemName.trim()
 
   return {
     cabangs,
@@ -157,6 +167,7 @@ export function useInventoryRequest() {
     handleCabangChange,
     handleNoteChange,
     handleQuantityChange,
+    handleUnitChange,
     handlePriceChange,
     handleItemQuantityChange,
     handleRemoveItem,
@@ -164,6 +175,7 @@ export function useInventoryRequest() {
     resetItem,
     addToList,
     handleSelectItem,
+    isCustomItem,
     isAddDisabled,
     isSubmitDisabled,
   }

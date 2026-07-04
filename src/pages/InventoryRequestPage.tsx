@@ -13,12 +13,14 @@ export default function InventoryRequestPage() {
     unit,
     quantity,
     price,
+    isCustomItem,
     submitting,
     itemsList,
     handleDateChange,
     handleCabangChange,
     handleNoteChange,
     handleQuantityChange,
+    handleUnitChange,
     handlePriceChange,
     handleItemQuantityChange,
     handleRemoveItem,
@@ -55,11 +57,23 @@ export default function InventoryRequestPage() {
             value={itemName}
             onChange={handleSelectItem}
             fetcher={fetchInventoryRequestItems}
+            allowCustom
           />
 
           <div className="control">
             <label className="label">Satuan</label>
-            <input className="input" placeholder="Contoh: kg, box, pcs" value={unit} readOnly />
+            <input
+              className="input"
+              placeholder="Contoh: kg, box, pcs"
+              value={unit}
+              onChange={handleUnitChange}
+              readOnly={!isCustomItem}
+            />
+            {isCustomItem && (
+              <small style={{ color: 'var(--muted)', marginTop: 6, display: 'block' }}>
+                Barang kustom: isi nama barang dan satuan secara manual.
+              </small>
+            )}
           </div>
           <div className="control">
             <label className="label">Jumlah</label>
