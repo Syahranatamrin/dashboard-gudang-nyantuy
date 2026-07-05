@@ -13,6 +13,7 @@ export default function InventoryRequestPage() {
     unit,
     quantity,
     price,
+    priceInput,
     isCustomItem,
     submitting,
     itemsList,
@@ -69,11 +70,6 @@ export default function InventoryRequestPage() {
               onChange={handleUnitChange}
               readOnly={!isCustomItem}
             />
-            {isCustomItem && (
-              <small style={{ color: 'var(--muted)', marginTop: 6, display: 'block' }}>
-                Barang kustom: isi nama barang dan satuan secara manual.
-              </small>
-            )}
           </div>
           <div className="control">
             <label className="label">Jumlah</label>
@@ -88,11 +84,11 @@ export default function InventoryRequestPage() {
           <div className="control">
             <label className="label">Satuan Harga</label>
             <input
-              type="number"
-              min={0}
-              step={1}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               className="input"
-              value={price || ''}
+              value={priceInput}
               onChange={handlePriceChange}
               placeholder="Masukkan harga satuan"
               title="Satuan Harga"

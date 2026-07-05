@@ -27,6 +27,8 @@ export function buildInventoryRequestBody(
   note: string,
   items: LineItem[],
 ): InventoryRequestPayload {
+  const normalizePrice = (value?: number) => Math.max(0, Math.round(Number(value) || 0))
+
   return {
     version: 'v1',
     'Tanggal Permintaan': date,
@@ -34,7 +36,7 @@ export function buildInventoryRequestBody(
     Keterangan: note,
     Status: 'Submitted',
     Items: items.map(it => {
-      const harga = it.price || 0
+      const harga = normalizePrice(it.price)
       return {
         'ID BARANG': it.id || '',
         'Nama Barang': it.name,

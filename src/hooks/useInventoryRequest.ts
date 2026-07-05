@@ -24,6 +24,7 @@ export function useInventoryRequest() {
   const [unit, setUnit] = useState<string>('')
   const [quantity, setQuantity] = useState<number>(1)
   const [price, setPrice] = useState<number>(0)
+  const [priceInput, setPriceInput] = useState<string>('')
   const [brand, setBrand] = useState<string>('')
   const [specification, setSpecification] = useState<string>('')
   const [submitting, setSubmitting] = useState<boolean>(false)
@@ -35,6 +36,7 @@ export function useInventoryRequest() {
     setUnit('')
     setQuantity(1)
     setPrice(0)
+    setPriceInput('')
     setBrand('')
     setSpecification('')
   }
@@ -45,11 +47,14 @@ export function useInventoryRequest() {
       setItemId(item.id || '')
       setUnit(item.unit)
       setPrice(0)
+      setPriceInput('')
       setBrand(item.brand || '')
       setSpecification(item.specification || '')
     } else {
       setItemId('')
       setUnit('')
+      setPrice(0)
+      setPriceInput('')
       setBrand('')
       setSpecification('')
     }
@@ -132,7 +137,9 @@ export function useInventoryRequest() {
   }
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPrice(Math.max(0, Number(e.target.value) || 0))
+    const digitsOnly = e.target.value.replace(/[^\d]/g, '')
+    setPriceInput(digitsOnly)
+    setPrice(Number(digitsOnly || 0))
   }
 
   const handleItemQuantityChange = (idx: number, val: number) => {
@@ -160,6 +167,7 @@ export function useInventoryRequest() {
     unit,
     quantity,
     price,
+    priceInput,
     submitting,
     itemsList,
     groupedItems,
