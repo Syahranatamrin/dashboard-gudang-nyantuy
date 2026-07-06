@@ -6,9 +6,10 @@ type Props = {
   value: string
   onChange: (item: ItemRow | null, name: string) => void
   fetcher?: () => Promise<ItemRow[]>
+  allowCustom?: boolean
 }
 
-export default function ItemSearchDropdown({ value, onChange, fetcher }: Props) {
+export default function ItemSearchDropdown({ value, onChange, fetcher, allowCustom = false }: Props) {
   const [items, setItems] = useState<ItemRow[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -48,8 +49,10 @@ export default function ItemSearchDropdown({ value, onChange, fetcher }: Props) 
   }, [items, search])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const nextValue = e.target.value
     setOpen(true)
-    setSearch(e.target.value)
+    setSearch(nextValue)
+    if (allowCustom) onChange(null, nextValue)
     if (!open) loadItems()
   }
 
@@ -69,7 +72,7 @@ export default function ItemSearchDropdown({ value, onChange, fetcher }: Props) 
       <label className="label">Nama Barang</label>
       <input 
         className="input" 
-        placeholder="Cari atau pilih barang"
+        placeholder={allowCustom ? 'Cari barang atau input manual' : 'Cari atau pilih barang'}
         value={open ? search : value}
         onChange={handleInputChange}
         onFocus={handleInputFocus}

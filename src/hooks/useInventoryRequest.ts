@@ -24,6 +24,7 @@ export function useInventoryRequest() {
   const [unit, setUnit] = useState<string>('')
   const [quantity, setQuantity] = useState<number>(1)
   const [price, setPrice] = useState<number>(0)
+  const [priceInput, setPriceInput] = useState<string>('')
   const [brand, setBrand] = useState<string>('')
   const [specification, setSpecification] = useState<string>('')
   const [submitting, setSubmitting] = useState<boolean>(false)
@@ -35,6 +36,7 @@ export function useInventoryRequest() {
     setUnit('')
     setQuantity(1)
     setPrice(0)
+    setPriceInput('')
     setBrand('')
     setSpecification('')
   }
@@ -44,9 +46,17 @@ export function useInventoryRequest() {
     if (item) {
       setItemId(item.id || '')
       setUnit(item.unit)
-      setPrice(item.price || 0)
+      setPrice(0)
+      setPriceInput('')
       setBrand(item.brand || '')
       setSpecification(item.specification || '')
+    } else {
+      setItemId('')
+      setUnit('')
+      setPrice(0)
+      setPriceInput('')
+      setBrand('')
+      setSpecification('')
     }
   }
 
@@ -60,7 +70,7 @@ export function useInventoryRequest() {
     if (idx >= 0) {
       const next = [...itemsList]
       const prev = next[idx]
-      next[idx] = { ...prev, quantity: prev.quantity + quantity }
+      next[idx] = { ...prev, quantity: prev.quantity + quantity, price }
       setItemsList(next)
     } else {
       setItemsList([
@@ -122,6 +132,16 @@ export function useInventoryRequest() {
     setQuantity(Number(e.target.value))
   }
 
+  const handleUnitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUnit(e.target.value)
+  }
+
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digitsOnly = e.target.value.replace(/[^\d]/g, '')
+    setPriceInput(digitsOnly)
+    setPrice(Number(digitsOnly || 0))
+  }
+
   const handleItemQuantityChange = (idx: number, val: number) => {
     const q = val || 1
     const next = [...itemsList]
@@ -134,8 +154,9 @@ export function useInventoryRequest() {
     setItemsList(next)
   }
 
-  const isAddDisabled = !itemName || !unit || quantity <= 0
+  const isAddDisabled = !itemName || !unit || quantity <= 0 || price <= 0
   const isSubmitDisabled = submitting || !date || !cabang || itemsList.length === 0
+  const isCustomItem = !itemId && !!itemName.trim()
 
   return {
     cabangs,
@@ -146,6 +167,7 @@ export function useInventoryRequest() {
     unit,
     quantity,
     price,
+    priceInput,
     submitting,
     itemsList,
     groupedItems,
@@ -153,12 +175,15 @@ export function useInventoryRequest() {
     handleCabangChange,
     handleNoteChange,
     handleQuantityChange,
+    handleUnitChange,
+    handlePriceChange,
     handleItemQuantityChange,
     handleRemoveItem,
     handleSubmit,
     resetItem,
     addToList,
     handleSelectItem,
+    isCustomItem,
     isAddDisabled,
     isSubmitDisabled,
   }

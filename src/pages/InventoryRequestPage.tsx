@@ -3,8 +3,6 @@ import Header from '../components/Header'
 import ItemSearchDropdown from '../components/ItemSearchDropdown'
 import { useInventoryRequest } from '../hooks/useInventoryRequest'
 import { fetchInventoryRequestItems } from '../services/items'
-import { formatIDR } from '../utils/format'
-
 export default function InventoryRequestPage() {
   const {
     cabangs,
@@ -15,12 +13,16 @@ export default function InventoryRequestPage() {
     unit,
     quantity,
     price,
+    priceInput,
+    isCustomItem,
     submitting,
     itemsList,
     handleDateChange,
     handleCabangChange,
     handleNoteChange,
     handleQuantityChange,
+    handleUnitChange,
+    handlePriceChange,
     handleItemQuantityChange,
     handleRemoveItem,
     handleSubmit,
@@ -56,11 +58,18 @@ export default function InventoryRequestPage() {
             value={itemName}
             onChange={handleSelectItem}
             fetcher={fetchInventoryRequestItems}
+            allowCustom
           />
 
           <div className="control">
             <label className="label">Satuan</label>
-            <input className="input" placeholder="Contoh: kg, box, pcs" value={unit} readOnly />
+            <input
+              className="input"
+              placeholder="Contoh: kg, box, pcs"
+              value={unit}
+              onChange={handleUnitChange}
+              readOnly={!isCustomItem}
+            />
           </div>
           <div className="control">
             <label className="label">Jumlah</label>
@@ -73,12 +82,16 @@ export default function InventoryRequestPage() {
             />
           </div>
           <div className="control">
-            <label className="label">Total Harga</label>
+            <label className="label">Satuan Harga</label>
             <input
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               className="input"
-              readOnly
-              value={price > 0 ? formatIDR(price * (Number(quantity) || 0)) : 'Harga -'}
-              title="Total Harga"
+              value={priceInput}
+              onChange={handlePriceChange}
+              placeholder="Masukkan harga satuan"
+              title="Satuan Harga"
               style={{
                 fontWeight: 600,
                 color: 'var(--primary)',
