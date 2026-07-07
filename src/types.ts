@@ -96,8 +96,9 @@ export type InventoryApprovalItem = {
   trxId: string
   date?: string
   tanggalTerima?: string
+  rowNumber?: number
   outlet: string
-  itemId: string
+  itemId?: string
   itemName: string
   spesifikasi?: string
   quantity: number

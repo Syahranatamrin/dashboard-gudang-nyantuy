@@ -59,6 +59,8 @@ export async function fetchInventoryApprovalItems(
     return list.map((row: any): InventoryApprovalItem => {
       const rowCabang =
         row.outlet ||
+        row.Outlet ||
+        row.OUTLET ||
         row.cabang ||
         row.Cabang ||
         row.CABANG ||
@@ -82,6 +84,7 @@ export async function fetchInventoryApprovalItems(
         trxId: normalizeText(trxIdRaw || `ROW-${row.row_number ?? Math.random().toString(36).slice(2, 8)}`),
         date: normalizeText(row['Tanggal Pengajuan'] || row['tanggal pengajuan'] || row.date || ''),
         tanggalTerima: normalizeText(row['Tanggal Terima'] || row['tanggal terima'] || ''),
+        rowNumber: normalizeNumber(row.row_number) || undefined,
         outlet: normalizeText(rowCabang),
         itemId: normalizeText(itemIdRaw),
         itemName: normalizeText(
