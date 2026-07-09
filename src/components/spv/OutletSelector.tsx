@@ -40,7 +40,7 @@ const OutletSelector = ({ onStart, initialOutlet = '', initialDate = '', onLogou
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-200 mb-4">
             <Store size={32} />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">SPV Dashboard</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Admin Warehouse Dashboard</h1>
           <p className="text-slate-500">Silahkan pilih outlet untuk mengakses dashboard.</p>
         </div>
 

@@ -4,10 +4,17 @@ export const normalizePeralatanList = (raw: any): PeralatanItem[] => {
   const arr = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.data) ? raw.data : [])
   return (arr as any[])
     .filter(item => {
-      const statusOk = String(item['Status Approval Finance'] || '').toLowerCase() === 'terima'
-      const v = item['Verifikasi SPV']
-      const s = String(v).toLowerCase()
-      const verifFalse = v === false || s === 'false' || v === 0 || s === '0'
+      const statusApproval = String(item['Status Approval Finance'] ?? '').trim().toLowerCase()
+      const rawVerifikasi = item['Verifikasi SPV']
+      const verifikasi = String(rawVerifikasi ?? '').trim().toLowerCase()
+      const statusOk = statusApproval === 'terima'
+      const verifFalse =
+        rawVerifikasi == null ||
+        verifikasi === '' ||
+        rawVerifikasi === false ||
+        verifikasi === 'false' ||
+        rawVerifikasi === 0 ||
+        verifikasi === '0'
       return statusOk && verifFalse
     })
     .map(item => ({
@@ -22,8 +29,8 @@ export const normalizePeralatanList = (raw: any): PeralatanItem[] => {
       status_approval_finance: String(item['Status Approval Finance'] || ''),
       tanggal_approval: String(item['Tanggal Approval'] || ''),
       catatan: String(item['Catatan'] || ''),
-      verifikasi_spv: item['Verifikasi SPV'] === true || String(item['Verifikasi SPV']).toLowerCase() === 'true',
+      verifikasi_spv: item['Verifikasi SPV'] === true || String(item['Verifikasi SPV'] ?? '').trim().toLowerCase() === 'true',
       bukti_dokumentasi: String(item['Bukti Dokumentasi Penerimaan'] || ''),
-      verifikasi_input_aset: item['Verifikasi Input Aset'] === true || String(item['Verifikasi Input Aset']).toLowerCase() === 'true',
+      verifikasi_input_aset: item['Verifikasi Input Aset'] === true || String(item['Verifikasi Input Aset'] ?? '').trim().toLowerCase() === 'true',
     }))
 }

@@ -10,7 +10,7 @@ export const ROLES: Role[] = ['purchasing', 'spv']
 
 export const ROLE_LABEL: Record<Role, string> = {
   purchasing: 'Purchasing',
-  spv: 'Supervisor (SPV)',
+  spv: 'Admin Warehouse',
 }
 
 export type MenuItem = {
@@ -33,7 +33,7 @@ export const ROLE_MENUS: Record<Role, MenuItem[]> = {
     { key: 'approval-inventory', title: 'Approval Permintaan Inventaris', subtitle: 'Cek & setujui pengajuan inventaris', emoji: '🗂️', href: '/approval-inventory' },
   ],
   spv: [
-    { key: 'spv-home', title: 'SPV Dashboard', subtitle: 'Pilih outlet dan akses menu SPV', emoji: '🛡️', href: '/spv/home' },
+    { key: 'spv-home', title: 'Admin Warehouse Dashboard', subtitle: 'Pilih outlet dan akses menu Admin Warehouse', emoji: '🛡️', href: '/spv/home' },
   ],
 }
 

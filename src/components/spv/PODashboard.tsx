@@ -27,7 +27,11 @@ const PODashboard = ({ outlet, onBack }: PODashboardProps) => {
     setError(null)
     try {
       const data = await fetchPOList(outlet)
-      const filtered = data.filter(item => String(item.outlet).trim().toLowerCase() === String(outlet).trim().toLowerCase())
+      const filtered = data.filter(item => {
+        const itemOutlet = String(item.outlet ?? '').trim().toLowerCase()
+        const activeOutlet = String(outlet).trim().toLowerCase()
+        return !itemOutlet || itemOutlet === activeOutlet
+      })
       setList(filtered)
       setConfirmedIds([])
       setCurrentPage(1)

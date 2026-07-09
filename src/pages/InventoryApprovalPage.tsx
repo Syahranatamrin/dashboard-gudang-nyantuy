@@ -35,6 +35,14 @@ function parseTanggalToTime(d?: string): number {
   return Number.isNaN(t) ? 0 : t
 }
 
+function getInventoryApprovalKey(item: InventoryApprovalItem): string {
+  const identity =
+    item.itemId?.trim() ||
+    (typeof item.rowNumber === 'number' ? `ROW-${item.rowNumber}` : '') ||
+    item.itemName.trim()
+  return `${item.trxId}||${identity}`
+}
+
 export default function InventoryApprovalPage() {
   const [items, setItems] = useState<InventoryApprovalItem[]>([])
   const [loading, setLoading] = useState(false)
@@ -89,7 +97,7 @@ export default function InventoryApprovalPage() {
 
   const filtered = useMemo(() => {
     let base = items.filter(i => {
-      const key = `${i.trxId}||${i.itemId}`
+      const key = getInventoryApprovalKey(i)
       const status = i.status === 'Pending' && decided[key] ? decided[key] : i.status
       // Hanya tampilkan yang masih menunggu keputusan (Pending / Terima / Tolak dari API atau state lokal)
       void status
@@ -129,13 +137,13 @@ export default function InventoryApprovalPage() {
   }
 
   const applyLocalDecision = (item: InventoryApprovalItem, decision: Decision) => {
-    const key = `${item.trxId}||${item.itemId}`
+    const key = getInventoryApprovalKey(item)
     setDecided(prev => ({ ...prev, [key]: decision }))
     // Update items dan dataCache secara terpisah; updater harus pure (tanpa side-effect).
     setItems(prev => {
       const nextStatus: InventoryApprovalStatus = decision
       return prev.map(it =>
-        it.trxId === item.trxId && it.itemId === item.itemId
+        getInventoryApprovalKey(it) === key
           ? { ...it, status: nextStatus }
           : it,
       )
@@ -144,7 +152,7 @@ export default function InventoryApprovalPage() {
       const currentCabang = cabangRef.current
       const list = prev[currentCabang] || []
       const next = list.map(it =>
-        it.trxId === item.trxId && it.itemId === item.itemId
+        getInventoryApprovalKey(it) === key
           ? { ...it, status: decision }
           : it,
       )
@@ -158,7 +166,7 @@ export default function InventoryApprovalPage() {
     decision: Decision,
     reason?: string,
   ) => {
-    if (!item.trxId || !item.itemId || !item.outlet) {
+    if (!item.trxId || !item.outlet) {
       alert('Data tidak lengkap untuk approval inventaris')
       return
     }
@@ -167,12 +175,13 @@ export default function InventoryApprovalPage() {
       return
     }
 
-    const key = `${item.trxId}||${item.itemId}`
+    const key = getInventoryApprovalKey(item)
     setSubmitting(prev => ({ ...prev, [key]: true }))
     try {
       await submitInventoryApproval({
         trxId: item.trxId,
-        itemId: item.itemId,
+        // Barang manual valid memiliki itemId kosong.
+        itemId: item.itemId || '',
         outlet: item.outlet,
         status: decision,
         alasan: decision === 'Tolak' ? reason : undefined,
@@ -255,7 +264,7 @@ export default function InventoryApprovalPage() {
           <div className="dropdown-empty">Tidak ada data</div>
         ) : (
           pageData.map((i, idx) => {
-            const key = `${i.trxId}||${i.itemId}`
+            const key = getInventoryApprovalKey(i)
             const localDecision = decided[key]
             const isAccepted =
               localDecision === 'Terima' || (!localDecision && i.status === 'Terima')
@@ -263,7 +272,7 @@ export default function InventoryApprovalPage() {
               localDecision === 'Tolak' || (!localDecision && i.status === 'Tolak')
             return (
               <InventoryApprovalCard
-                key={`${i.trxId}-${i.itemId}-${idx}`}
+                key={`${getInventoryApprovalKey(i)}-${idx}`}
                 trxId={i.trxId}
                 date={i.date}
                 itemId={i.itemId}
@@ -299,7 +308,7 @@ export default function InventoryApprovalPage() {
         itemName={rejectingItem?.itemName || ''}
         isLoading={
           rejectingItem
-            ? submitting[`${rejectingItem.trxId}||${rejectingItem.itemId}`]
+            ? submitting[getInventoryApprovalKey(rejectingItem)]
             : false
         }
       />
