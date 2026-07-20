@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, PackageCheck, ClipboardCheck, Wrench, Store } from 'lucide-react'
-import Footer from '../../components/spv/Footer'
 import { useSpvOutlet } from '../../contexts/SpvOutletContext'
 
 const SpvHomePage = () => {
@@ -73,9 +72,6 @@ const SpvHomePage = () => {
         </button>
       </div>
 
-      <div className="mt-auto pt-6">
-        <Footer />
-      </div>
     </div>
   )
 }
